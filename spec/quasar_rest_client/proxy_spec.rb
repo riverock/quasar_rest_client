@@ -10,10 +10,6 @@ RSpec.describe QuasarRestClient::Proxy do
       limit: 10,
       var: {
         "skiffilators" => "ben",
-        "now" => Time.new(2016,1,1,11,15,45),
-        "today" => Date.new(2016,1,1),
-        "count" => 12,
-        "many" => [1,2,3],
       }
     }
   end
@@ -34,10 +30,6 @@ RSpec.describe QuasarRestClient::Proxy do
           "q"=>"SELECT * FROM `nowhere` WHERE skiffle = :skiffiliators",
           "limit"=>10,
           "var.skiffilators"=>"ben".inspect,
-          "var.now"=>"TIME '11:15:45'",
-          "var.today"=>"DATE '2016-01-01'",
-          "var.count"=>12,
-          "var.many"=>"[1, 2, 3]",
         },
         :headers=>{
           "accept-encoding"=>"",
@@ -66,10 +58,6 @@ RSpec.describe QuasarRestClient::Proxy do
           :query=> {
             "limit"=>10,
             "var.skiffilators"=>"ben".inspect,
-            "var.now"=>"TIME '11:15:45'",
-            "var.today"=>"DATE '2016-01-01'",
-            "var.count"=>12,
-            "var.many"=>"[1, 2, 3]",
           },
           :headers=>{
             "accept-encoding"=>"",

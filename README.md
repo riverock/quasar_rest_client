@@ -105,6 +105,20 @@ install`. To release a new version, update the version number in
 create a git tag for the version, push git commits and tags, and push
 the `.gem` file to [rubygems.org](https://rubygems.org).
 
+### Live Testing
+
+To live test the client, you will need a working quasar server, and a
+working mongodb server with data in it.
+
+The `./live_spec` directory contains the spec tests for live testing,
+and depends up on the `./live_spec/config/config.yml` file to be set
+with the appropriate information to make the connection work. You can
+copy the `./live_spec/config/config.sample.yml` file and fill in the
+details.
+
+A rake task `live_spec` is also available to make running these tests
+simpler.
+
 ## Contributing
 
 Bug reports and pull requests are welcome on GitHub at

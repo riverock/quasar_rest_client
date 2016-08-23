@@ -7,4 +7,4 @@
 /pkg/
 /spec/reports/
 /tmp/
-live-test.rb
+/live_spec/config/config.yml

@@ -5,8 +5,7 @@ RSpec::Core::RakeTask.new(:spec)
 
 task :default => :spec
 
-desc "update samples"
-task :update_samples => %W[live-test.rb-sample]
-rule ".rb-sample" => ".rb" do |t|
-  sh "sed -e \"/^### BEGIN_SCRUB/,/^### END_SCRUB/s/'.*'/'-'/\" #{t.source} > #{t.name}"
+RSpec::Core::RakeTask.new(:live_spec) do |c|
+  c.pattern = 'live_spec/**{,/*/**}/*_spec.rb'
+  c.rspec_opts = '-I live_spec'
 end
