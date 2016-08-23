@@ -1,8 +1,10 @@
 require "httparty"
+require "quasar_rest_client/mogrify_vars"
 
 module QuasarRestClient
   class Proxy
     include HTTParty
+    include MogrifyVars
 
     # @!attribute query_hash
     #   @return [Hash] values to form the query string for the request
@@ -72,6 +74,7 @@ module QuasarRestClient
       end
 
       query_hash.delete(:q)
+      query_hash.delete(:var)
 
       self.class.get(
         '/data/fs' + collection,
@@ -103,35 +106,6 @@ module QuasarRestClient
 
     def endpoint
       Base.config.endpoint
-    end
-
-    def mogrify_vars(hash)
-      vars = hash[:var]&.map do |k, v|
-        new_key = "var.#{k}"
-
-        # This is hacky-hack, at best
-        # E.g. given var: { email: "yacht@mail.com"} =>
-        #            var.email: '"yacht@mail.com"'
-        # i.e. quasar requires the double quotes
-        # Note that the documentation says single quotes, but it is WRONG
-        new_val = case v
-                  when String
-                    v.inspect
-                  when Time
-                    "TIME '#{v.strftime("%T")}'"
-                  when Date
-                    "DATE '#{v.strftime("%F")}'"
-                  when Array
-                    v.inspect
-                  else
-                    v
-                  end
-
-        [new_key, new_val]
-      end.to_h
-
-      hash.delete(:var)
-      hash.merge(vars)
     end
 
     def request_headers

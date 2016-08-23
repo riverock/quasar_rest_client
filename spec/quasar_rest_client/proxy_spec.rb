@@ -117,6 +117,7 @@ RSpec.describe QuasarRestClient::Proxy do
 
       let(:params) do
         {
+          :query=>{"limit"=>10},
           :headers=>{
             "accept-encoding"=>"",
             "accept"=>"application/json",
