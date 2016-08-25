@@ -71,4 +71,29 @@ module QuasarRestClient
     proxy.simple_query
   end
 
+  # @param [String] q - query string
+  # @param [String] dest - destination collection to create
+  # @param [Hash] opts - options
+  # @return [String] JSON reponse
+  def self.long_query(q='', dest='', opts={})
+    proxy = Proxy.new(q, opts)
+    proxy.long_query(destination: dest)
+  end
+
+  # @param [String] coll - collection to retrieve
+  # @param [Hash] opts - options
+  # @return [String] JSON reponse
+  def self.get_data(coll='', opts={})
+    proxy = Proxy.new(nil, opts)
+    proxy.get_data(collection: coll)
+  end
+
+  # @param [String] coll - collection to delete
+  # @param [Hash] opts - options
+  # @return [String] JSON reponse
+  def self.delete_data(coll='', opts={})
+    proxy = Proxy.new(nil, opts)
+    proxy.delete_data(collection: coll)
+  end
+
 end

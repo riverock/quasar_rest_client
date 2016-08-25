@@ -1,8 +1,10 @@
 require "httparty"
+require "quasar_rest_client/mogrify_vars"
 
 module QuasarRestClient
   class Proxy
     include HTTParty
+    include MogrifyVars
 
     # @!attribute query_hash
     #   @return [Hash] values to form the query string for the request
@@ -36,11 +38,64 @@ module QuasarRestClient
       self.query_hash.merge!(opts)
     end
 
-    # @return [String] JSON response from query
+    # @return [String] JSON response from get query
     def simple_query
       self.class.get(
-        path,
+        '/query/fs',
         query: request_query,
+        headers: request_headers,
+        logger: Base.config.logger,
+        base_uri: Base.config.endpoint
+        )
+    end
+
+    # @param [String] destination collection name to create for later extraction
+    # @return [String] JSON response from post query
+    def long_query(destination:)
+      fail "must provide a destination: #{destination.inspect} #{destination.class}" unless (String === destination && destination.length > 0)
+      body = query_hash.delete(:q)
+      self.class.post(
+        '/query/fs',
+        query: request_query,
+        body: body,
+        headers: request_headers.merge({"destination" => destination}),
+        logger: Base.config.logger,
+        base_uri: Base.config.endpoint
+        )
+    end
+
+    # @param [String] collection name of the collection to retrieve
+    # @return [String] JSON response
+    def get_data(collection:)
+      fail "must provide a collection: #{collection.inspect} [#{collection.class}]" unless (String === collection && collection.length > 0)
+
+      unless collection[0] == ?/
+        collection = ?/ + collection
+      end
+
+      query_hash.delete(:q)
+      query_hash.delete(:var)
+
+      self.class.get(
+        '/data/fs' + collection,
+        query: request_query,
+        headers: request_headers,
+        logger: Base.config.logger,
+        base_uri: Base.config.endpoint
+        )
+    end
+
+    # @param [String] collection name of the collection to delete
+    # @return [String] JSON response
+    def delete_data(collection:)
+      fail "must provide a collection: #{collection.inspect} [#{collection.class}]" unless (String === collection && collection.length > 0)
+
+      unless collection[0] == ?/
+        collection = ?/ + collection
+      end
+
+      self.class.delete(
+        '/data/fs' + collection,
         headers: request_headers,
         logger: Base.config.logger,
         base_uri: Base.config.endpoint
@@ -53,11 +108,6 @@ module QuasarRestClient
       Base.config.endpoint
     end
 
-    # TODO: return proper path based on query type for future expansion
-    def path
-      '/query/fs'
-    end
-
     def request_headers
       {
         "accept-encoding" => '',
@@ -66,7 +116,7 @@ module QuasarRestClient
     end
 
     def request_query
-      stringify_keys(query_hash)
+      stringify_keys(mogrify_vars(query_hash))
     end
 
     def stringify_keys(hash)
